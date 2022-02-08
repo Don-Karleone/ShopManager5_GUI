@@ -1,30 +1,79 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div class="header">
+    <Header />
+    <Navbar :signin="userSigned ? ' Wyloguj się' : ' Zaloguj się'" :userSigned="userSigned"/>
   </div>
-  <router-view/>
+  <div class="view">
+    <router-view @userSigned="changeSignText()" />
+  </div>
 </template>
 
+<script>
+import Header from "./components/Header.vue";
+import Navbar from "./components/Navbar.vue";
+
+export default {
+  name: "App",
+  data() {
+    return {
+      userSigned: false,
+    };
+  },
+  components: {
+    Header,
+    Navbar,
+  },
+  methods: {
+    isUserLoggedIn: function () {
+      if (!sessionStorage.getItem("user")) {
+        this.$router.push("/signin");
+      }else {
+        this.userSigned = true;}
+    },
+  },
+  beforeMount() {
+    this.isUserLoggedIn();
+  },
+  watch: {
+    $route(to, from) {
+      if (from.path == "/signin" && to.path != "/about") {
+        this.userSigned = true;
+      }
+    },
+  },
+};
+</script>
+
+
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+
+body {
+  font-family: "Poppins", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  font-size: 60px;
+  margin-bottom: 0px;
+}
+h2 {
+  font-size: 50px;
+}
+h3 {
+  font-size: 30px;
+}
+
+.header {
+  margin-bottom: 25px;
+  padding-bottom: 1px;
+  border-radius: 50px;
+  box-shadow: 0px 24px 21px -28px rgba(66, 68, 90, 1);
+}
+
+#app {
   text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+  color: #333;
 }
 </style>
